@@ -54,9 +54,15 @@ class MainActivity : ComponentActivity() {
                             })
                         }
                         !isProfileComplete -> {
-                            CreateProfileScreen(onSaveProfile = { name, username, email, neighborhood, age, imageUri ->
-                                authViewModel.saveProfile(name, username, email, neighborhood, age, imageUri)
-                            })
+                            val authenticatedEmail = authViewModel.getAuthenticatedEmail()
+                            val suggestedUsername = authViewModel.getSuggestedUsername()
+                            CreateProfileScreen(
+                                authenticatedEmail = authenticatedEmail,
+                                suggestedUsername = suggestedUsername,
+                                onSaveProfile = { name, username, email, neighborhood, age, imageUri ->
+                                    authViewModel.saveProfile(name, username, email, neighborhood, age, imageUri)
+                                }
+                            )
                         }
                         else -> {
                             MainScreen(user = currentUser, onSignOut = { authViewModel.onLogout() })

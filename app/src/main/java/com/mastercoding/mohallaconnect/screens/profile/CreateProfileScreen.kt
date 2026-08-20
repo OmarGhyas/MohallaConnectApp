@@ -38,17 +38,23 @@ import com.mastercoding.mohallaconnect.ui.theme.*
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun CreateProfileScreenPreview() {
-    CreateProfileScreen(onSaveProfile = { _, _, _, _, _, _ -> })
+    CreateProfileScreen(
+        authenticatedEmail = "jane@gmail.com",
+        suggestedUsername = "@jane_doe",
+        onSaveProfile = { _, _, _, _, _, _ -> }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProfileScreen(
+    authenticatedEmail: String,
+    suggestedUsername: String,
     onSaveProfile: (String, String, String, String, String, Uri?) -> Unit
 ) {
     var fullName by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("@") }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf(suggestedUsername) }
+    val email = authenticatedEmail
     var neighbourhood by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -166,16 +172,8 @@ fun CreateProfileScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        ProfileLabel("Gmail Address")
-        ProfileInputField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = "jane@gmail.com",
-            trailingIcon = {
-                Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-        )
+        ProfileLabel("Gmail Address (Auto-filled)")
+        ReadOnlyProfileField(label = "", value = email)
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -229,7 +227,7 @@ fun CreateProfileScreen(
         // Save Profile Button
         Button(
             onClick = {
-                if (fullName.isBlank() || username == "@" || username.length < 4 || email.isBlank() || neighbourhood.isBlank() || age.isBlank()) {
+                if (fullName.isBlank() || neighbourhood.isBlank() || age.isBlank()) {
                     Toast.makeText(context, "Please fill in all details", Toast.LENGTH_SHORT).show()
                 }  else {
                     onSaveProfile(fullName, username, email, neighbourhood, age, imageUri)
@@ -262,56 +260,5 @@ fun CreateProfileScreen(
         }
 
         Spacer(modifier = Modifier.height(40.dp))
-    }
-}
-
-@Composable
-fun ProfileLabel(text: String) {
-    Text(
-        text = text,
-        color = Color.White,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp)
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProfileInputField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    trailingIcon: @Composable (() -> Unit)? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(InnerCardBackground)
-            .padding(horizontal = 4.dp)
-    ) {
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(text = placeholder, color = Color.Gray, fontSize = 16.sp)
-            },
-            trailingIcon = trailingIcon,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = PostTextColor,
-                unfocusedTextColor = PostTextColor
-            ),
-            singleLine = true,
-            keyboardOptions = keyboardOptions
-        )
     }
 }

@@ -26,3 +26,6 @@ val DownvoteRed = Color(0xFFFF1744)
 
 // Inner Card Background
 val InnerCardBackground = Color(0xFF0B1C30)
+
+// Update Profile Button
+val UpdateButtonBackground = Color(0xFF144545)

@@ -110,10 +110,50 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    fun updateProfile(
+        fullName: String,
+        username: String,
+        age: String,
+        neighbourhood: String
+    ) {
+        val currentUser = _currentUser.value ?: return
+        
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
+            val updatedUser = currentUser.copy(
+                fullName = fullName,
+                username = username,
+                age = age.toIntOrNull() ?: currentUser.age,
+                neighbourhood = neighbourhood
+            )
+
+            val result = userRepository.saveUserProfile(updatedUser)
+            result.onSuccess {
+                _currentUser.value = updatedUser
+            }.onFailure {
+                _error.value = "Failed to update profile"
+            }
+            _isLoading.value = false
+        }
+    }
+
     fun onLogout() {
         authRepository.signOut()
         _isAuthenticated.value = false
         _isProfileComplete.value = false
         _currentUser.value = null
+    }
+
+    fun getAuthenticatedEmail(): String {
+        return authRepository.getCurrentUser()?.email ?: ""
+    }
+
+    fun getSuggestedUsername(): String {
+        val email = getAuthenticatedEmail()
+        return if (email.contains("@")) {
+            "@" + email.substringBefore("@").replace(".", "_")
+        } else "@user"
     }
 }

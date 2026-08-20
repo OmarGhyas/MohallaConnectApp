@@ -27,12 +27,14 @@ import androidx.navigation.compose.rememberNavController
 import com.mastercoding.mohallaconnect.data.model.User
 import com.mastercoding.mohallaconnect.screens.feed.FeedScreen
 import com.mastercoding.mohallaconnect.screens.feed.posts.CreatePostsPage
+import com.mastercoding.mohallaconnect.screens.profile.EditProfileScreen
 import com.mastercoding.mohallaconnect.screens.profile.ProfileScreen
 import com.mastercoding.mohallaconnect.screens.realestate.RealEstateScreen
 import com.mastercoding.mohallaconnect.screens.services.ServicesScreen
 import com.mastercoding.mohallaconnect.ui.theme.AccentOrange
 import com.mastercoding.mohallaconnect.ui.theme.DarkBackground
 import com.mastercoding.mohallaconnect.ui.theme.HeaderText
+import com.mastercoding.mohallaconnect.viewmodel.AuthViewModel
 import com.mastercoding.mohallaconnect.viewmodel.FeedViewModel
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -41,12 +43,14 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object RealEstate : Screen("real_estate", "Real Estate", Icons.Default.RealEstateAgent)
     object Profile : Screen("profile", "Profile", Icons.Default.Person)
     object CreatePost : Screen("create_post", "Create Post", Icons.Default.Home)
+    object EditProfile : Screen("edit_profile", "Edit Profile", Icons.Default.Edit)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(user: User?, onSignOut: () -> Unit) {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
     val feedViewModel: FeedViewModel = viewModel()
     val items = listOf(
         Screen.Feed,
@@ -58,7 +62,12 @@ fun MainScreen(user: User?, onSignOut: () -> Unit) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val currentScreen = items.find { it.route == currentDestination?.route }
+    val currentScreen = items.find { it.route == currentDestination?.route } ?: when(currentDestination?.route) {
+        Screen.CreatePost.route -> Screen.CreatePost
+        Screen.EditProfile.route -> Screen.EditProfile
+        else -> null
+    }
+
     val topBarTitle = if (currentScreen == Screen.Feed) {
         "Mohalla Connect"
     } else {
@@ -87,7 +96,7 @@ fun MainScreen(user: User?, onSignOut: () -> Unit) {
                 },
                 actions = {
                     if (currentScreen == Screen.Profile) {
-                        IconButton(onClick = { /* TODO: Edit Profile */ }) {
+                        IconButton(onClick = { navController.navigate(Screen.EditProfile.route) }) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit Profile",
@@ -150,6 +159,15 @@ fun MainScreen(user: User?, onSignOut: () -> Unit) {
             composable(Screen.RealEstate.route) { RealEstateScreen() }
             composable(Screen.Profile.route) { 
                 ProfileScreen(user = user, onSignOut = onSignOut)
+            }
+            composable(Screen.EditProfile.route) {
+                EditProfileScreen(
+                    user = user,
+                    onBack = { navController.popBackStack() },
+                    onUpdateProfile = { name, username, age, neighborhood ->
+                        authViewModel.updateProfile(name, username, age, neighborhood)
+                    }
+                )
             }
             composable(Screen.CreatePost.route) { 
                 CreatePostsPage(
