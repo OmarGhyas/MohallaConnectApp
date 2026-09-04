@@ -79,7 +79,7 @@ fun CreateProfileScreen(
 
         Text(
             text = "Create Profile",
-            color = HeaderText,
+            color = Color(0xFFD98C1E),
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
         )

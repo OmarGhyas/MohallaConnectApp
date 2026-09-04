@@ -104,7 +104,7 @@ fun CreatePostsPage(
                         },
                         enabled = text.isNotEmpty() && selectedNeighborhood.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFB74D),
+                            containerColor = Color(0xFFFF9100),
                             contentColor = Color.White
                         ),
                         shape = RoundedCornerShape(20.dp),

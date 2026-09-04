@@ -6,7 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.HelpCenter
+import androidx.compose.material.icons.automirrored.filled.NextPlan
+import androidx.compose.material.icons.automirrored.filled.NextWeek
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mastercoding.mohallaconnect.ui.theme.AccentOrange
 import com.mastercoding.mohallaconnect.ui.theme.HeaderText
 import com.mastercoding.mohallaconnect.ui.theme.PostCardBackground
 
@@ -73,13 +79,13 @@ fun WhatsHappeningCard(onClick: () -> Unit) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF1B2E46)),
+                    .background(Color(0xFFD98C1E)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Post",
-                    tint = HeaderText,
+                    tint = Color.White,
                     modifier = Modifier.size(20.dp)
                 )
             }
