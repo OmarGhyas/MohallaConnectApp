@@ -10,6 +10,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +30,13 @@ import com.mastercoding.mohallaconnect.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(user: User?, onSignOut: () -> Unit) {
+fun ProfileScreen(
+    user: User?,
+    onSignOut: () -> Unit,
+    postsCount: String = "48",
+    neighborsCount: String = "312",
+    karmaCount: String = "1.2k"
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     
@@ -87,7 +96,7 @@ fun ProfileScreen(user: User?, onSignOut: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = user?.fullName ?: "Loading...",
+                text = user?.fullName ?: "",
                 color = Color.White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold
@@ -98,28 +107,59 @@ fun ProfileScreen(user: User?, onSignOut: () -> Unit) {
                 fontSize = 16.sp
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // Info Cards
-            InfoCard(
-                icon = Icons.Default.Email,
-                label = "EMAIL",
-                value = user?.email ?: ""
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            InfoCard(
-                icon = Icons.Default.LocationOn,
-                label = "NEIGHBORHOOD",
-                value = user?.neighbourhood ?: ""
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            InfoCard(
-                icon = Icons.Default.Cake,
-                label = "AGE",
-                value = user?.age?.toString() ?: ""
-            )
+            // Stats Section
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ProfileStatItem(count = postsCount, label = "Posts")
+                ProfileStatItem(count = neighborsCount, label = "Neighbors")
+                ProfileStatItem(count = karmaCount, label = "UpVotes")
+            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // Info Card Section
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                color = CardBackground
+            ) {
+                Column(
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    InfoRowItem(
+                        icon = Icons.Outlined.Email,
+                        label = "EMAIL",
+                        value = user?.email ?: ""
+                    )
+                    HorizontalDivider(
+                        color = Color(0xFF102135),
+                        thickness = 1.dp
+                    )
+                    InfoRowItem(
+                        icon = Icons.Outlined.LocationOn,
+                        label = "NEIGHBORHOOD",
+                        value = user?.neighbourhood ?: ""
+                    )
+                    HorizontalDivider(
+                        color = Color(0xFF102135),
+                        thickness = 1.dp
+                    )
+                    InfoRowItem(
+                        icon = Icons.Outlined.ShoppingBag,
+                        label = "AGE",
+                        value = if (user?.age != null && user.age > 0) user.age.toString() else ""
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
 
             // Settings Button
             Surface(
@@ -220,7 +260,7 @@ fun ProfileScreen(user: User?, onSignOut: () -> Unit) {
                             .fillMaxWidth()
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFB2AD), // Light coral/red color from image
+                            containerColor = Color(0xFFFFB2AD), // Light coral/red color
                             contentColor = Color(0xFF4B1010) // Dark red for text
                         ),
                         shape = RoundedCornerShape(16.dp)
@@ -252,47 +292,74 @@ fun ProfileScreen(user: User?, onSignOut: () -> Unit) {
 }
 
 @Composable
-fun InfoCard(icon: ImageVector, label: String, value: String) {
-    Surface(
+fun ProfileStatItem(
+    count: String,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        Text(
+            text = count,
+            color = Color(0xFFFFA726), // Orange accent matching screenshot
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            color = Color.White,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+fun InfoRowItem(
+    icon: ImageVector,
+    label: String,
+    value: String
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)),
-        color = PostCardBackground
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF1E2D3E)),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFF1B2E46)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = Color(0xFFD3E4FE),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = label,
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.sp
-                )
-                Text(
-                    text = value,
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = Color(0xFF88A0B8),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = label,
+                color = Color(0xFF6C7D93),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = value,
+                color = Color.White,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
+

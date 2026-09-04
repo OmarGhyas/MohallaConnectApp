@@ -40,6 +40,23 @@ class PostRepository {
         awaitClose { subscription.remove() }
     }
 
+    fun getUserPosts(uid: String): Flow<List<Post>> = callbackFlow {
+        val subscription = postsCollection
+            .whereEqualTo("authorUid", uid)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    val posts = snapshot.toObjects(Post::class.java)
+                    trySend(posts)
+                }
+            }
+        awaitClose { subscription.remove() }
+    }
+
     suspend fun toggleUpvote(postId: String, userId: String): Result<Boolean> {
         return try {
             val postRef = postsCollection.document(postId)

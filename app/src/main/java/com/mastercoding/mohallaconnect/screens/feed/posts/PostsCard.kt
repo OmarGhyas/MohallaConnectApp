@@ -171,6 +171,7 @@ fun PostsCard(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+
                     // Comment
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
