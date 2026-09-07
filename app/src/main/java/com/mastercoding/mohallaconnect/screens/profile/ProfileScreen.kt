@@ -25,29 +25,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mastercoding.mohallaconnect.data.model.User
 import com.mastercoding.mohallaconnect.ui.theme.*
-import com.mastercoding.mohallaconnect.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     user: User?,
     onSignOut: () -> Unit,
+    postsCount: String = "48",
     neighborsCount: String = "312",
     karmaCount: String = "1.2k"
 ) {
-    val profileViewModel: ProfileViewModel = viewModel()
-    val userPosts by profileViewModel.userPosts.collectAsState()
-
-    LaunchedEffect(user?.uid) {
-        user?.let {
-            profileViewModel.fetchUserPosts(it.uid)
-        }
-    }
-
-    val dynamicPostsCount = userPosts.size.toString()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
     
@@ -128,7 +117,7 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileStatItem(count = dynamicPostsCount, label = "Posts")
+                ProfileStatItem(count = postsCount, label = "Posts")
                 ProfileStatItem(count = neighborsCount, label = "Neighbors")
                 ProfileStatItem(count = karmaCount, label = "UpVotes")
             }
