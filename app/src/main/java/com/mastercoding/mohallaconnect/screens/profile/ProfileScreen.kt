@@ -131,7 +131,7 @@ fun ProfileScreen(
                 color = CardBackground
             ) {
                 Column(
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    modifier = Modifier.padding(verticalSS = 4.dp)
                 ) {
                     InfoRowItem(
                         icon = Icons.Outlined.Email,
